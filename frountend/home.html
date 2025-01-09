@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>ברוכים הבאים למערכת הפקת חשבוניות</h1>
+    {% if user.is_authenticated %}
+        <p class="lead">שלום {{ user.username }}, ניהול לקוחות והפקת חשבוניות בקלות.</p>
+        <a href="{% url 'client_list' %}" class="btn btn-primary">ניהול לקוחות</a>
+        <a href="{% url 'invoice_list' %}" class="btn btn-secondary">חשבוניות</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger">התנתק</a>
+    {% else %}
+        <p class="lead">אנא התחבר כדי לגשת למערכת.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">התחבר</a>
+    {% endif %}
+</div>
+{% endblock %}

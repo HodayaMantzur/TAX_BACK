@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}לקוחות{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>לקוחות</h2>
+    <button id="add-client-btn" class="btn btn-success mb-3">הוסף לקוח חדש</button>
+    <table class="table table-striped" id="clients-table">
+        <thead>
+            <tr>
+                <th>שם</th>
+                <th>אימייל</th>
+                <th>טלפון</th>
+                <th>פעולות</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- תוכן הטבלה יתווסף דינמית -->
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    // פונקציה לטעינת הלקוחות מה-API
+    function loadClients() {
+        const token = localStorage.getItem('access_token');  // אתה צריך לשמור את הטוקן ב-localStorage או ב-cookie
+        if (!token) {
+            alert("נא להתחבר קודם.");
+            return;
+        }
+        
+        axios.get('/transactions/clients/', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(response => {
+            const clients = response.data.clients;
+            const tableBody = document.querySelector("#clients-table tbody");
+            tableBody.innerHTML = ""; // איפוס הטבלה
+            clients.forEach(client => {
+                const row = `
+                    <tr>
+                        <td>${client.name}</td>
+                        <td>${client.email}</td>
+                        <td>${client.phone_number}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editClient(${client.id})">ערוך</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteClient(${client.id})">מחק</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching clients:', error);
+            alert('שגיאה בטעינת הלקוחות.');
+        });
+    }
+
+    // פונקציה למחיקת לקוח
+    function deleteClient(clientId) {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            alert("נא להתחבר קודם.");
+            return;
+        }
+        
+        if (confirm("האם אתה בטוח שברצונך למחוק את הלקוח?")) {
+            axios.delete(`/transactions/clients/${clientId}/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(response => {
+                alert(response.data.message);
+                loadClients(); // רענון רשימת הלקוחות
+            })
+            .catch(error => {
+                console.error('Error deleting client:', error);
+                alert('שגיאה במחיקת הלקוח.');
+            });
+        }
+    }
+
+    // פונקציה לעריכת לקוח (דוגמה ראשונית בלבד)
+    function editClient(clientId) {
+        // תוסיף כאן לוגיקה לפתיחת טופס עדכון דינמי
+        alert('עריכת לקוח אינה נתמכת כרגע.');
+    }
+
+    // טעינת הלקוחות בעת פתיחת העמוד
+    document.addEventListener("DOMContentLoaded", loadClients);
+</script>
+{% endblock %}

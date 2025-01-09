@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}טופס חשבונית{% endblock %}
+
+{% block content %}
+<h2>טופס חשבונית</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">שמור</button>
+    <a href="{% url 'invoice_list' %}" class="btn btn-secondary">חזור</a>
+</form>
+{% endblock %}
