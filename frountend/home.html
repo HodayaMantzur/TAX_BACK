@@ -1,18 +1,68 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="text-center">
+        <h1>ברוכים הבאים למערכת הפקת חשבוניות</h1>
+        <div id="dynamic-content">
+            <p class="lead">טוען נתונים...</p>
+        </div>
+        <div id="authenticated-actions" style="display: none;">
+            <a href="/clients" class="btn btn-primary">ניהול לקוחות</a>
+            <a href="/invoices" class="btn btn-secondary">חשבוניות</a>
+            <a href="#" id="logout" class="btn btn-danger">התנתק</a>
+        </div>
+        <div id="unauthenticated-actions" style="display: none;">
+            <p class="lead">אנא התחבר כדי לגשת למערכת.</p>
+            <button id="login-client" class="btn btn-primary">התחבר כלקוח</button>
+            <button id="login-admin" class="btn btn-success">התחבר כמנהל</button>
+        </div>
+    </div>
 
-{% block title %}Home{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const dynamicContent = document.getElementById("dynamic-content");
+            const authActions = document.getElementById("authenticated-actions");
+            const unauthActions = document.getElementById("unauthenticated-actions");
+            const logoutButton = document.getElementById("logout");
 
-{% block content %}
-<div class="text-center">
-    <h1>ברוכים הבאים למערכת הפקת חשבוניות</h1>
-    {% if user.is_authenticated %}
-        <p class="lead">שלום {{ user.username }}, ניהול לקוחות והפקת חשבוניות בקלות.</p>
-        <a href="{% url 'client_list' %}" class="btn btn-primary">ניהול לקוחות</a>
-        <a href="{% url 'invoice_list' %}" class="btn btn-secondary">חשבוניות</a>
-        <a href="{% url 'logout' %}" class="btn btn-danger">התנתק</a>
-    {% else %}
-        <p class="lead">אנא התחבר כדי לגשת למערכת.</p>
-        <a href="{% url 'login' %}" class="btn btn-primary">התחבר</a>
-    {% endif %}
-</div>
-{% endblock %}
+            const accessToken = localStorage.getItem('access_token');
+
+            // בדיקת אוטנטיקציה
+            if (accessToken) {
+                axios.get('/api/users/me/', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                })
+                .then(response => {
+                    const user = response.data;
+                    dynamicContent.innerHTML = `<p class="lead">שלום ${user.username}, ניהול לקוחות והפקת חשבוניות בקלות.</p>`;
+                    authActions.style.display = "block";
+                })
+                .catch(() => {
+                    unauthActions.style.display = "block";
+                });
+            } else {
+                unauthActions.style.display = "block";
+            }
+
+           // התחברות כלקוח
+            document.getElementById("login-client").addEventListener("click", () => {
+               window.location.href = "login.html"; // הפנייה לדף הלוגין
+            });
+
+
+            // התחברות כמנהל
+            document.getElementById("login-admin").addEventListener("click", () => {
+                 window.location.href = "login_admin.html"; // הפנייה לדף הלוגין
+            });
+        });
+                
+    </script>
+</body>
+</html>
