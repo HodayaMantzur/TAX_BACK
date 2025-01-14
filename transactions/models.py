@@ -1,6 +1,6 @@
+import uuid
 from django.db import models
 from django.contrib.auth import get_user_model
-
 
 User = get_user_model()
 
@@ -12,8 +12,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+def generate_unique_id():
+    return str(uuid.uuid4())[:8]
+
+
 class Client(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
+    id_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
@@ -32,9 +38,11 @@ class Transaction(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default=INCOME)  # ערך ברירת מחדל
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
+    quantity = models.PositiveIntegerField(default=1)
+    include_vat = models.BooleanField(default=False)
+    date = models.DateField(auto_now_add=True)  # תאריך ברירת מחדל
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField(blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True)

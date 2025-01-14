@@ -3,6 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login as Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>כניסת לקוח</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">שם משתמש</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">סיסמה</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">התחבר</button>
+        </form>
+        <div id="errorMessage" class="text-danger mt-3"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:8000/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error('שגיאה בהתחברות');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+
+                alert('התחברת בהצלחה!');
+                window.location.href = '/api/transactions/clients/new/';
+            } catch (error) {
+                document.getElementById('errorMessage').innerText = error.message;
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -31,7 +94,7 @@
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('http://localhost:8000/api/token/', {
+                const response = await fetch('http://localhost:8000/login/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -48,9 +111,11 @@
                 // שמירה בטוקן ב-localStorage
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
+                console.log('Access token saved:', data.access);  // הדפס את הטוקן כדי לוודא שנשמר
+
 
                 alert('התחברת בהצלחה!');
-                window.location.href = '/'; // להפנות לדף הבית או לאן שתרצי
+                window.location.href = '/api/transactions/clients/new/'; // להפנות ליצירת לקוח
             } catch (error) {
                 document.getElementById('errorMessage').innerText = error.message;
             }
@@ -59,4 +124,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> -->
