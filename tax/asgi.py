@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 ASGI config for tax project.
 
@@ -15,7 +14,6 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tax.settings')
 
 application = get_asgi_application()
-=======
 """
 ASGI config for tax project.
 
@@ -32,4 +30,3 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tax.settings')
 
 application = get_asgi_application()
->>>>>>> 7182736e392abde25ada3aa05adef33de8f5a2e9
